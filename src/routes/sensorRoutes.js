@@ -28,7 +28,7 @@ async function sensorRoutes(fastify) {
 
       const risk = getRiskLevel(distancia_agua_cm);
 
-      console.log(risk);
+      
 
       const result = await pool.query(
         `
@@ -53,7 +53,7 @@ async function sensorRoutes(fastify) {
         ]
       )
 
-    if(chuva && risk && (getCurrentTime() - delay) > 1){
+    if(chuva && risk && (getCurrentTime() - delay) > 600){
         const channelLevelPercent = Math.trunc(100 - (distancia_agua_cm * 100)/200);
         const rainIntensityPercent = Math.trunc((nivel_chuva_raw * 100)/1024);
         const date = new Date(); // The absolute point in time
