@@ -21,8 +21,6 @@ async function sensorRoutes(fastify) {
     async (request, reply) => {
 
       const {
-        temperatura,
-        umidade,
         chuva,
         nivel_chuva_raw,
         distancia_agua_cm
@@ -34,8 +32,6 @@ async function sensorRoutes(fastify) {
         `
         INSERT INTO sensor_reading
         (
-          temperatura,
-          umidade,
           chuva,
           nivel_chuva_raw,
           distancia_agua_cm
@@ -44,15 +40,11 @@ async function sensorRoutes(fastify) {
         (
           $1,
           $2,
-          $3,
-          $4,
-          $5
+          $3
         )
         RETURNING *
         `,
         [
-          temperatura,
-          umidade,
           chuva,
           nivel_chuva_raw,
           distancia_agua_cm
@@ -62,6 +54,14 @@ async function sensorRoutes(fastify) {
     if(chuva && risk && (getCurrentTime() - delay) > 600){
         const channelLevelPercent = Math.trunc(100 - (distancia_agua_cm * 100)/200);
         const rainIntensityPercent = Math.trunc((nivel_chuva_raw * 100)/1024);
+        const date = new Date(); // The absolute point in time
+
+        const formatter = new Intl.DateTimeFormat('pt-br', {
+          timeZone: 'America/Sao_Paulo', // Target IANA time zone
+          dateStyle: 'short',            // Options: 'full', 'long', 'medium', 'short'
+          timeStyle: 'medium'             // Options: 'full', 'long', 'medium', 'short'
+        });
+        
         await sendTelegramMessage(
             `🚨 ${risk}
 
@@ -71,7 +71,7 @@ async function sensorRoutes(fastify) {
 
     💧 Intensidade da chuva: ${rainIntensityPercent}%
 
-    🕒 Horário: ${new Date().toLocaleString("pt-BR", {timeZone: "UTC"})}
+    🕒 Horário: ${formatter.format(date)}
 
     `
         )
