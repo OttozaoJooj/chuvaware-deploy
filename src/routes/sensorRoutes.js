@@ -28,6 +28,8 @@ async function sensorRoutes(fastify) {
 
       const risk = getRiskLevel(distancia_agua_cm);
 
+      console.log(risk);
+
       const result = await pool.query(
         `
         INSERT INTO sensor_reading
@@ -91,7 +93,7 @@ async function sensorRoutes(fastify) {
     '/api/sensor-data',
     async (request, reply) =>{
       //"SELECT temperatura, umidade, chuva,nivel_chuva_raw, distancia_agua_cm, created_at FROM sensor_reading WHERE created_at >= NOW() - interval '1 hours' ORDER BY created_at ASC;"
-        const result = pool.query("SELECT temperatura, umidade, chuva,nivel_chuva_raw, distancia_agua_cm, created_at FROM sensor_reading ORDER BY created_at desc LIMIT 1;")
+        const result = pool.query("SELECT chuva,nivel_chuva_raw, distancia_agua_cm, created_at FROM sensor_reading ORDER BY created_at desc LIMIT 1;")
 
         return {
             success: true,
